@@ -11,7 +11,7 @@ Gem::Specification.new {|g|
     g.require_path  = 'lib'
     g.executables   = [ 'minecraft' ]
 
-    g.add_dependency('lzma')
+    g.add_dependency('ruby-lzma')
     g.add_dependency('zip')
     g.add_dependency('highline')
 }

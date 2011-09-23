@@ -60,7 +60,6 @@ class LaunchCraft
 
     protected
     def post (url, body, headers={})
-      puts url
       uri = URI.parse(url)
       Net::HTTP.start(uri.host, uri.port) {|http|
         http.request_post(uri.request, body, headers) {|res|

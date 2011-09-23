@@ -121,15 +121,19 @@ rescue Exception => e
   Kernel.die "Unhandled exception: #{e.class}: #{e}"
 end
 
-a = LaunchCraft::Auth.new($user, $pass)
-begin
-  a.login
-rescue LaunchCraft::Auth::OldVersion
-  Kernel.die "Old version, please update launcher"
-rescue LaunchCraft::Auth::BadLogin
-  Kernel.die "Username or password incorrect"
-rescue Exception => e
-  Kernel.die "Unhandled exception: #{e.class}: #{e}"
-end
+if $anon
+  LaunchCraft::Java.exec($user)
+else
+  a = LaunchCraft::Auth.new($user, $pass)
+  begin
+    a.login
+  rescue LaunchCraft::Auth::OldVersion
+    Kernel.die "Old version, please update launcher"
+  rescue LaunchCraft::Auth::BadLogin
+    Kernel.die "Username or password incorrect"
+  rescue Exception => e
+    Kernel.die "Unhandled exception: #{e.class}: #{e}"
+  end
 
-LaunchCraft::Java.exec(a.username, a.uuid)
+  LaunchCraft::Java.exec(a.username, a.uuid)
+end

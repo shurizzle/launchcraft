@@ -34,6 +34,10 @@ class LaunchCraft
           end
 
     Dir.mkdir(res) unless File.directory?(res)
+    %w[bin resources saves screenshots stats texturepacks].each {|dir|
+      dir = File.join(res, dir)
+      Dir.mkdir(dir) unless File.directory?(dir)
+    }
     return res
   end
 end

@@ -99,7 +99,6 @@ class LaunchCraft
         if e.file == "#{@os}_natives.jar.lzma"
           dir = File.join(@dir, 'natives')
           file = File.join(@dir, e.file)
-          puts file
           FileUtils.rm_rf(dir) if File.exists?(dir)
           file = LZMA.extract(file).tap {
             FileUtils.rm_f(file)
