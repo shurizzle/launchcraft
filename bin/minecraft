@@ -1,0 +1,138 @@
+#!/usr/bin/env ruby
+#--
+# Copyleft shura. [ shura1991@gmail.com ]
+#
+# This file is part of launchcraft.
+#
+# launchcraft is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published
+# by the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# launchcraft is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with launchcraft. If not, see <http://www.gnu.org/licenses/>.
+#++
+
+module Kernel
+  def self.die (message=nil)
+    puts message if message
+    exit 1
+  end
+end
+
+begin
+  require 'launchcraft'
+rescue RuntimeError => e
+  Kernel.die e
+rescue LoadError
+  $:.unshift File.expand_path(File.join('..', '..', 'lib'), __FILE__)
+  retry
+end
+require 'highline/import'
+
+require 'optparse'
+
+OptionParser.new {|opts|
+  opts.banner = "Usage: #$0 [options] username"
+
+  opts.on('-l', '--login URL', 'Login URL') {|url|
+    LaunchCraft::Config['url.login'] = url
+  }
+
+  opts.on('-j', '--joinserver URL', 'Join Server URL') {|url|
+    LaunchCraft::Config['url.joinserver'] = url
+  }
+
+  opts.on('-s', '--skins URL', 'Skins URL') {|url|
+    LaunchCraft::Config['url.skins'] = url
+  }
+
+  opts.on('-r', '--resources URL', 'Resources URL') {|url|
+    LaunchCraft::Config['url.resources'] = url
+  }
+
+  opts.on('-d', '--download URL', 'Download URL') {|url|
+    LaunchCraft::Config['url.download'] = url
+  }
+
+  opts.on('-H', '--has-paid URL', 'Has paid URL') {|url|
+    LaunchCraft::Config['url.has_paid'] = url
+  }
+
+  opts.on('-c', '--cloacks URL', 'Cloacks URL') {|url|
+    LaunchCraft::Config['url.cloacks'] = url
+  }
+
+  opts.on('-a', '--anon', 'Play as anonymous') {
+    $anon = true
+  }
+
+  opts.on('-f', '--force', 'Force updates') {
+    $force = true
+  }
+
+  opts.on('-p', '--password PASSWORD', 'Password for login') {|pass|
+    $pass = pass
+  }
+
+  opts.on_tail('-v', '--version', 'Show version') {
+    puts "launchcraft #{LaunchCraft::VERSION}"
+    exit 0
+  }
+
+  opts.on_tail('-h', '--help', 'Show this helps') {
+    puts opts
+    exit 0
+  }
+}.tap {|opts|
+  o = opts.parse!(ARGV)
+  LaunchCraft::Config.save
+
+  case o.size
+  when 0
+    $user = 'Player'
+  when 1
+    $user = o.first
+  else
+    puts opts
+    exit 1
+  end
+
+  $pass = ask('Password: ') {|q| q.echo = '*' } if !$anon and !$pass
+}
+
+STDIN.sync = true
+
+l = LaunchCraft::Update.new
+begin
+  l.check {|e|
+    puts "Checking #{e}..."
+  }
+
+  l.send($force ? :force_update : :update) {|stat|
+    print " " * 31
+    print "\r"
+    print "#{stat.current.file} (#{(100.0 / stat.total * stat.partial).round}%)"
+  }
+  puts
+rescue Exception => e
+  Kernel.die "Unhandled exception: #{e.class}: #{e}"
+end
+
+a = LaunchCraft::Auth.new($user, $pass)
+begin
+  a.login
+rescue LaunchCraft::Auth::OldVersion
+  Kernel.die "Old version, please update launcher"
+rescue LaunchCraft::Auth::BadLogin
+  Kernel.die "Username or password incorrect"
+rescue Exception => e
+  Kernel.die "Unhandled exception: #{e.class}: #{e}"
+end
+
+LaunchCraft::Java.exec(a.username, a.uuid)
