@@ -37,7 +37,7 @@ class OS
     else
       def parse (what=RUBY_PLATFORM)
         case what
-        when /(?<!dar)win/
+        when /(?<!dar)win|w32/
           :windows
         when /darwin/
           :macos

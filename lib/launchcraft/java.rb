@@ -17,20 +17,19 @@
 # along with launchcraft. If not, see <http://www.gnu.org/licenses/>.
 #++
 
+require 'os'
 require 'launchcraft'
-
-require 'rbconfig'
 
 class Dir
   def self.path
-    (((ENV.key?('PATH') and ENV['PATH'] and !ENV['PATH'].empty?) ? ENV['PATH'] : nil) ||
-     ['/bin', '/usr/bin', '/sbin', '/usr/sbin', '/usr/local/bin'].join(RbConfig::CONFIG['PATH_SEPARATOR'])
-    ).split(RbConfig::CONFIG['PATH_SEPARATOR'])
+    ((ENV.key?('PATH') and ENV['PATH'] and !ENV['PATH'].empty?) ? ENV['PATH'] : '').split(File::PATH_SEPARATOR)
   end
 end
 
 module Kernel
   def self.which (bin, which=0)
+    bin << '.exe' if OS.windows? and bin !~ /\.exe$/
+
     res = Dir.path.map {|path|
       File.join(path, bin)
     }.select {|bin|
@@ -73,7 +72,7 @@ class LaunchCraft
         bindir = File.join(LaunchCraft.working_dir, 'bin')
         [BIN, '-Xmx1024M', '-Xms512M', '-cp', %w[jinput lwjgl lwjgl_util minecraft].map {|x|
           File.join(bindir, "#{x}.jar")
-        }.join(':'), "-Djava.library.path=#{File.join(bindir, 'natives')}", "-Dminecraft.appname=#{LaunchCraft.appname}",
+        }.join(File::PATH_SEPARATOR), "-Djava.library.path=#{File.join(bindir, 'natives')}", "-Dminecraft.appname=#{LaunchCraft.appname}",
         'net.minecraft.client.Minecraft', user, sessid].compact
       end
     end
