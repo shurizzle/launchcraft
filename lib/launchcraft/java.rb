@@ -73,7 +73,7 @@ class LaunchCraft
         bindir = File.join(LaunchCraft.working_dir, 'bin')
         [BIN, '-Xmx1024M', '-Xms512M', '-cp', %w[jinput lwjgl lwjgl_util minecraft].map {|x|
           File.join(bindir, "#{x}.jar")
-        }.join(':'), "-Djava.library.path=#{File.join(bindir, 'natives')}",
+        }.join(':'), "-Djava.library.path=#{File.join(bindir, 'natives')}", "-Dminecraft.appname=#{LaunchCraft.appname}",
         'net.minecraft.client.Minecraft', user, sessid].compact
       end
     end

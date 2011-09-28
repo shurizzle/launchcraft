@@ -22,6 +22,10 @@ require 'launchcraft'
 class LaunchCraft
   Config = Class.new(Hash) {
     def initialize
+      rehash
+    end
+
+    def rehash
       @path = File.join(LaunchCraft.working_dir, 'options.txt')
       set_default
       File.file?(@path) ? parse : save

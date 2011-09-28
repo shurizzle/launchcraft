@@ -18,10 +18,10 @@
 #++
 
 require 'os'
+require 'lzma'
 require 'launchcraft'
 require 'launchcraft/md5_file'
 require 'launchcraft/config'
-require 'launchcraft/lzma'
 require 'launchcraft/zip'
 require 'launchcraft/uri'
 

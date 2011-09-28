@@ -26,7 +26,12 @@ class LaunchCraft
     attr_accessor "#{OS.parse.to_s.gsub(/^macos$/, 'macosx')}_natives".to_sym
 
     def initialize
+      rehash
+    end
+
+    def rehash
       @path = File.join(LaunchCraft.working_dir, 'bin', 'md5s')
+      self.lwjgl = self.jinput = self.lwjgl_util = self.minecraft = self.natives = nil
       parse if File.file?(@path)
     end
 

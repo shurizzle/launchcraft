@@ -21,7 +21,18 @@ require 'os'
 require 'launchcraft/version'
 
 class LaunchCraft
-  def self.working_dir (appname='minecraft')
+  def self.appname
+    @appname ||= 'minecraft'
+  end
+
+  def self.appname=(name)
+    @appname = name.to_s
+    Config.rehash
+    MD5File.rehash
+    @appname
+  end
+
+  def self.working_dir (appname=self.appname)
     res = case OS.parse
           when :linux, :solaris
             File.join(ENV['HOME'], ".#{appname}")

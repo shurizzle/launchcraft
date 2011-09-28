@@ -77,6 +77,10 @@ OptionParser.new {|opts|
     $pass = pass
   }
 
+  opts.on('-n', '--appname APPNAME', 'Set application name (change directory)') {|appname|
+    LaunchCraft.appname = appname
+  }
+
   opts.on_tail('-v', '--version', 'Show version') {
     puts "launchcraft #{LaunchCraft::VERSION}"
     exit 0
