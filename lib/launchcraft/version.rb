@@ -18,5 +18,5 @@
 #++
 
 class LaunchCraft
-  VERSION = '0.0.1.4.1'.freeze
+  VERSION = '0.0.1.4.2'.freeze
 end
