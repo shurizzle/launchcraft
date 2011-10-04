@@ -30,7 +30,7 @@ begin
 rescue RuntimeError => e
   Kernel.die e
 end
-require 'highline/import'
+require 'password'
 
 require 'optparse'
 
@@ -104,7 +104,7 @@ OptionParser.new {|opts|
     exit 1
   end
 
-  $pass = ask('Password: ') {|q| q.echo = '*' } if !$anon and !$pass
+  $pass = Kernel.password if !$anon and !$pass
 }
 
 STDIN.sync = true
